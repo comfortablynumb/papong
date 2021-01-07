@@ -18,4 +18,4 @@ move /Y labels.txt BUILD\
 move /Y %name%.s BUILD\ 
 move /Y %name%.nes BUILD\
 
-D:\Downloads\NES\Mesen.0.9.9\Mesen.exe BUILD\%name%.nes
+D:\Downloads\NES\Mesen.0.9.9\Mesen.exe D:\Development\NES\Papong\BUILD\%name%.nes /fullscreen

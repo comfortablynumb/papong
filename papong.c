@@ -21,41 +21,14 @@ struct Player {
 	unsigned char width;
 	unsigned char height;
 	unsigned char y_direction;
+	unsigned char pad;
+	unsigned char pad_number;
+	unsigned char points;
 };
-
-// Global Variables
-
-unsigned char pad1;
-unsigned char pad2;
-
-const unsigned char BLACK=0x00;
-const unsigned char LEFT_LIMIT=16;
-const unsigned char RIGHT_LIMIT=241;
-const unsigned char TOP_LIMIT = 23;
-const unsigned char BOTTOM_LIMIT=223;
-const unsigned char MOVEMENT_NONE = 0;
-const unsigned char MOVEMENT_UP = 1;
-const unsigned char MOVEMENT_DOWN = 2;
-const unsigned char MOVEMENT_LEFT = 3;
-const unsigned char MOVEMENT_RIGHT = 4;
 
 struct Ball ball = {120, 120, 8, 8, 4, 2};
-struct Player player1 = {30, 80, 8, 32, 0};
-struct Player player2 = {218, 80, 8, 32, 0};
-
-const unsigned char palette_bg[]={
-	0x0f, 0x00, 0x10, 0x30, // black, gray, lt gray, white
-	0,0,0,0,
-	0,0,0,0,
-	0,0,0,0
-};
-
-const unsigned char palette_spr[]={
-	0x0f,0x00,0x10,0x30,
-	0x0f,0x11,0x21,0x31,
-	0x0f,0x06,0x16,0x26,
-	0x0f,0x09,0x19,0x29
-};
+struct Player player1 = {30, 80, 8, 32, 0, 0, 0, 0};
+struct Player player2 = {218, 80, 8, 32, 0, 0, 1, 0};
 
 // Functions
 
@@ -99,18 +72,22 @@ void show_text(const unsigned char * text, int x, int y) {
 void show_introduction(void) {
 	static const char first_text[] = "Molleja Soft presents...";
 	static const char second_text[] = "PAPONG";
+    static const char clear_text[] = "                        ";
+	static const char version_text[] = "0.1.0";
 
-	show_text(first_text, 5, 12);
+	show_text(version_text, 25, 28);
 
-	delay(100);
-
-	clear_background();
-
-	show_text(second_text, 12, 12);
+	show_text(first_text, 4, 12);
 
 	delay(100);
 
-	clear_background();
+    show_text(clear_text, 4, 12);
+
+	show_text(second_text, 13, 12);
+
+	delay(100);
+
+    show_text(clear_text, 4, 12);
 }
 
 void initialize_system(void) {
@@ -145,17 +122,46 @@ void initialize_system(void) {
 	ppu_on_all();
 }
 
+void restart_round() {
+	player1.y = PLAYER_INITIAL_Y;
+	player2.y = PLAYER_INITIAL_Y;
+	ball.x = BALL_INITIAL_X;
+	ball.y = BALL_INITIAL_Y;
+}
+
+void add_point_to_player(struct Player * player) {
+	++(player->points);
+
+	delay(100);
+
+	restart_round();
+}
+
 void ball_movement(void){
-	long collisionPlayer1 = check_collision(&ball, &player1);
+	long collisionPlayer1 = 0;
 	long collisionPlayer2 = 0;
+
+	if (ball.x + ball.width >= RIGHT_LIMIT) {
+		add_point_to_player(&player1);
+
+		return;
+	}
+
+	if (ball.x <= LEFT_LIMIT) {
+		add_point_to_player(&player2);
+
+		return;
+	}
+
+	collisionPlayer1 = check_collision(&ball, &player1);
 
 	if (!collisionPlayer1) {
 		collisionPlayer2 = check_collision(&ball, &player2);
 	}
 
-	if (ball.x + ball.width >= RIGHT_LIMIT || collisionPlayer2) {
+	if (collisionPlayer2) {
 		ball.x_direction = MOVEMENT_LEFT;
-	} else if (ball.x <= LEFT_LIMIT || collisionPlayer1) {
+	} else if (collisionPlayer1) {
 		ball.x_direction = MOVEMENT_RIGHT;
 	}
 
@@ -178,31 +184,37 @@ void ball_movement(void){
 	}
 }
 
-void player_one_movement(void) {
-	// Determine Player 1 movement
+void player_movement(struct Player * player) {
+	// Read the controller
 
-	if (pad1 & PAD_UP){
-		player1.y_direction = MOVEMENT_UP;
-	} else if (pad1 & PAD_DOWN){
-		player1.y_direction = MOVEMENT_DOWN;
+	player->pad = pad_poll(player->pad_number);
+
+	// Determine Player movement
+
+	if (player->pad & PAD_UP){
+		player->y_direction = MOVEMENT_UP;
+	} else if (player->pad & PAD_DOWN){
+		player->y_direction = MOVEMENT_DOWN;
 	} else {
 		return;
 	}
 
 	// Check screen limits
 
-	if (player1.y_direction == MOVEMENT_UP && player1.y <= TOP_LIMIT) {
+	if (player->y_direction == MOVEMENT_UP && player->y <= TOP_LIMIT) {
 		return;
 	}
 
-	if (player1.y_direction == MOVEMENT_DOWN && player1.y + player1.height >= BOTTOM_LIMIT) {
+	if (player->y_direction == MOVEMENT_DOWN && player->y + player->height >= BOTTOM_LIMIT) {
 		return;
 	}
 
-	if (player1.y_direction == MOVEMENT_UP) {
-		player1.y -= 1;
+	// Move paddle
+
+	if (player->y_direction == MOVEMENT_UP) {
+		player->y -= PADDLE_VELOCITY;
 	} else {
-		player1.y += 1;
+		player->y += PADDLE_VELOCITY;
 	}
 }
 
@@ -214,6 +226,13 @@ void draw(void){
 	// Clear all sprites from sprite buffer
 
 	oam_clear();
+
+	// Draw points
+
+	// NOTE: Here we add 48 to match the # Tile of the corresponding number with the score of the player
+
+	one_vram_buffer(player1.points + 48, NTADR_A(13, 0));
+	one_vram_buffer(player2.points + 48, NTADR_A(29, 0));
 
 	// Draw our ball
 
@@ -231,7 +250,7 @@ void draw(void){
 void main(void) {
 	initialize_system();
 
-	// show_introduction();
+	show_introduction();
 
 	while (1){
 		// :: Game Loop
@@ -240,16 +259,17 @@ void main(void) {
 
 		ppu_wait_nmi();
 
-		// Read the first controller
+		// Determine players movements
 
-		pad1 = pad_poll(0);
+		player_movement(&player1);
+		player_movement(&player2);
 
-		// Read the second controller
+		// Determine ball movement
 
-		pad2 = pad_poll(1);
-
-		player_one_movement();
 		ball_movement();
+
+		// Draw everything!
+
         draw();
 	}
 }
