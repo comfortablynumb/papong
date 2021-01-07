@@ -24,11 +24,12 @@ struct Player {
 	unsigned char pad;
 	unsigned char pad_number;
 	unsigned char points;
+	const unsigned char player_win_text[15];
 };
 
 struct Ball ball = {120, 120, 8, 8, 4, 2};
-struct Player player1 = {30, 80, 8, 32, 0, 0, 0, 0};
-struct Player player2 = {218, 80, 8, 32, 0, 0, 1, 0};
+struct Player player1 = {30, 80, 8, 32, 0, 0, 0, 0, "Player 1 WINS!"};
+struct Player player2 = {218, 80, 8, 32, 0, 0, 1, 0, "Player 2 WINS!"};
 
 // Functions
 
@@ -131,6 +132,17 @@ void restart_round() {
 
 void add_point_to_player(struct Player * player) {
 	++(player->points);
+
+	if (player->points >= MAX_POINTS) {
+		show_text(player->player_win_text, 9, 12);
+
+		delay(100);
+
+		show_text("              ", 9, 12);
+
+		player1.points = 0;
+		player2.points = 0;
+	}
 
 	delay(100);
 

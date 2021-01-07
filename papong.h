@@ -18,6 +18,7 @@ const unsigned char PLAYER_WIDTH = 8;
 const unsigned char PLAYER_HEIGHT = 32;
 const unsigned char PLAYER_1_INITIAL_X = 30;
 const unsigned char PLAYER_2_INITIAL_X = 218;
+const unsigned char MAX_POINTS = 5;
 
 const unsigned char PlayerSprite[]={
     0,  0,0x00,1,
