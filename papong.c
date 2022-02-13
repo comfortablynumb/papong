@@ -1,6 +1,6 @@
-#include "LIB/neslib.h"
-#include "LIB/nesdoug.h"
-#include "papong.h" // holds our metasprite data
+#include "lib/neslib.h"
+#include "lib/nesdoug.h"
+#include "papong.h"
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -48,26 +48,21 @@ void clear_background(void) {
 void show_text(const unsigned char * text, int x, int y) {
 	static unsigned char i = 0;
 
-	ppu_off(); // screen off
+	ppu_off();
 
-	pal_bg(palette_bg); //	load the BG palette
+	pal_bg(palette_bg);
 
-	// set a starting point on the screen
-	// vram_adr(NTADR_A(x,y));
-	vram_adr(NTADR_A(x, y)); // screen is 32 x 30 tiles
+	vram_adr(NTADR_A(x, y));
 
 	i = 0;
-	while(text[i]){
-		vram_put(text[i]); // this pushes 1 char to the screen
+
+	while(text[i]) {
+		vram_put(text[i]);
+
 		++i;
 	}
 
-	// vram_adr and vram_put only work with screen off
-	// NOTE, you could replace everything between i = 0; and here with...
-	// vram_write(text,sizeof(text));
-	// does the same thing
-
-	ppu_on_all(); //	turn on screen
+	ppu_on_all();
 }
 
 void show_introduction(void) {
@@ -76,7 +71,7 @@ void show_introduction(void) {
     static const char clear_text[] = "                        ";
 	static const char version_text[] = "0.1.0";
 
-	show_text(version_text, 25, 28);
+    show_text(version_text, 25, 28);
 
 	show_text(first_text, 4, 12);
 
@@ -264,7 +259,7 @@ void main(void) {
 
 	show_introduction();
 
-	while (1){
+	while (1) {
 		// :: Game Loop
 
 		// Wait till beginning of the frame

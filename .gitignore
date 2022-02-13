@@ -1,2 +1,4 @@
-/BUILD
+/build
 /.idea
+/cmake-build-debug
+/tmp
