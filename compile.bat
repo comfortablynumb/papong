@@ -2,8 +2,6 @@
 
 set name="papong"
 
-set path=%path%;D:\Installations\cc65-snapshot-win32\bin\
-
 cc65 -Oirs %name%.c --add-source
 ca65 crt0.s
 ca65 %name%.s -g
