@@ -33,3 +33,5 @@ Here are some images:
 ```bash
 ./compile.sh
 ```
+
+* If everything went OK, then the compiled rom will be available on the **build/papong.nes** file.
