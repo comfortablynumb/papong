@@ -22,7 +22,7 @@ Here are some images:
 
 * Download the [cc65 package](https://cc65.github.io/) which contains the C compiler, assembler and linker for the 6502 (NES).
 * On Windows:
-  * You can execute the following command to compile the game (make sure you have **cc65-installation-path/bin** directory in your PATH environment. If not, you can edit the **compile.bat** file and change the directory **D:\Installations\cc65-snapshot-win32\bin\** for your directory):
+  * You can execute the following command to compile the game (make sure you have **cc65-installation-path/bin** directory in your PATH environment. If not, you can edit the **compile.bat** file and change the directory **D:\Installations\cc65-snapshot-win32\bin** for your directory):
 
 ```bash
 .\compile.bat
