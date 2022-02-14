@@ -7,7 +7,7 @@ Welcome to Papong! This is a Pong-like NES game written in C. I made this game f
 
 ## How to play
 
-* I provide the NES rom already compiled [here](dist/papong.nes).
+* I provide the NES rom already compiled in the file [dist/papong.nes](dist/papong.nes).
 * Download a NES emulator. I tested this rom using [Mesen](https://www.mesen.ca/)
 * Open the rom with the emulator. You can play with **Up arrow** (up) and **Down arrow** (down) for Player 1. **w** (up) and **s** (down) for player 2.
 * The first player to reach **5** points wins.
