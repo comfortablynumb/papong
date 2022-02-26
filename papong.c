@@ -69,7 +69,7 @@ void show_introduction(void) {
 	static const char first_text[] = "Molleja Soft presents...";
 	static const char second_text[] = "PAPONG";
     static const char clear_text[] = "                        ";
-	static const char version_text[] = "0.1.0";
+	static const char version_text[] = "0.1.2";
 
     show_text(version_text, 25, 28);
 
